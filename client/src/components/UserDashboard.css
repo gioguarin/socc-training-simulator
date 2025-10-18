@@ -1,0 +1,231 @@
+.dashboard {
+    min-height: 100vh;
+    background: #1a1a1a;
+    color: #fff;
+}
+
+.dashboard-header {
+    background: #2a2a2a;
+    padding: 1.5rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #444;
+}
+
+.header-content h1 {
+    margin: 0 0 0.5rem 0;
+    color: #646cff;
+}
+
+.user-info {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.role-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.role-admin {
+    background: #dc2626;
+    color: white;
+}
+
+.role-trainer {
+    background: #f59e0b;
+    color: white;
+}
+
+.role-trainee {
+    background: #10b981;
+    color: white;
+}
+
+.department {
+    color: #ccc;
+    font-size: 0.9rem;
+}
+
+.logout-btn {
+    background: #dc2626;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s;
+}
+
+.logout-btn:hover {
+    background: #b91c1c;
+}
+
+.dashboard-content {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.quick-actions {
+    margin-bottom: 2rem;
+}
+
+.quick-actions h2 {
+    color: #646cff;
+    margin-bottom: 1rem;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+}
+
+.action-btn {
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    text-align: center;
+    transition: all 0.3s;
+}
+
+.action-btn.primary {
+    background: #646cff;
+    color: white;
+}
+
+.action-btn.primary:hover {
+    background: #535bf2;
+    transform: translateY(-2px);
+}
+
+.action-btn.secondary {
+    background: #374151;
+    color: white;
+    border: 2px solid #646cff;
+}
+
+.action-btn.secondary:hover {
+    background: #646cff;
+    transform: translateY(-2px);
+}
+
+.training-history h2 {
+    color: #646cff;
+    margin-bottom: 1rem;
+}
+
+.sessions-list {
+    display: grid;
+    gap: 1rem;
+}
+
+.session-card {
+    background: #2a2a2a;
+    border-radius: 8px;
+    padding: 1.5rem;
+    border: 1px solid #444;
+}
+
+.session-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.session-header h3 {
+    margin: 0;
+    color: #fff;
+}
+
+.session-date {
+    color: #ccc;
+    font-size: 0.9rem;
+}
+
+.session-details {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.session-details span {
+    background: #374151;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.role {
+    background: #10b981;
+    color: white;
+}
+
+.category {
+    background: #f59e0b;
+    color: white;
+}
+
+.score {
+    background: #646cff;
+    color: white;
+}
+
+.session-feedback {
+    background: #374151;
+    padding: 1rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    color: #ccc;
+}
+
+.no-sessions {
+    text-align: center;
+    padding: 3rem;
+    background: #2a2a2a;
+    border-radius: 8px;
+    border: 2px dashed #444;
+}
+
+.no-sessions p {
+    color: #ccc;
+    margin-bottom: 1rem;
+}
+
+.start-training-link {
+    color: #646cff;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.start-training-link:hover {
+    text-decoration: underline;
+}
+
+.loading {
+    text-align: center;
+    padding: 3rem;
+    color: #ccc;
+}
+
+.loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 200px;
+}
+
+.loading-spinner {
+    color: #646cff;
+    font-size: 1.2rem;
+}

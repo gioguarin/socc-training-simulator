@@ -1,0 +1,99 @@
+.lobby {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
+}
+
+.lobby-card {
+  background: #1a1a1a;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  max-width: 500px;
+  width: 100%;
+}
+
+.lobby-card h2 {
+  color: #646cff;
+  margin-bottom: 1rem;
+}
+
+.lobby-card p {
+  color: #ccc;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.lobby-form {
+  margin-bottom: 2rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #fff;
+  font-weight: 500;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #333;
+  border-radius: 6px;
+  background: #2a2a2a;
+  color: #fff;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #646cff;
+}
+
+.join-button {
+  width: 100%;
+  padding: 0.75rem;
+  background: #646cff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.join-button:hover:not(:disabled) {
+  background: #535bf2;
+}
+
+.join-button:disabled {
+  background: #444;
+  cursor: not-allowed;
+}
+
+.lobby-info {
+  text-align: left;
+}
+
+.lobby-info h3 {
+  color: #fff;
+  margin-bottom: 1rem;
+}
+
+.lobby-info ul {
+  color: #ccc;
+  padding-left: 1.5rem;
+}
+
+.lobby-info li {
+  margin-bottom: 0.5rem;
+  line-height: 1.5;
+}

@@ -1,0 +1,251 @@
+.admin-dashboard {
+    min-height: 100vh;
+    background: #1a1a1a;
+    color: #fff;
+}
+
+.admin-header {
+    background: #2a2a2a;
+    padding: 1.5rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #444;
+}
+
+.header-content h1 {
+    margin: 0 0 0.5rem 0;
+    color: #646cff;
+}
+
+.header-content p {
+    margin: 0;
+    color: #ccc;
+}
+
+.logout-btn {
+    background: #dc2626;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s;
+}
+
+.logout-btn:hover {
+    background: #b91c1c;
+}
+
+.admin-content {
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.invite-codes-section {
+    background: #2a2a2a;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.section-header h2 {
+    color: #646cff;
+    margin: 0;
+}
+
+.create-btn {
+    background: #646cff;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s;
+}
+
+.create-btn:hover {
+    background: #535bf2;
+}
+
+.create-form {
+    background: #374151;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+}
+
+.form-row {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.form-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    margin-bottom: 0.5rem;
+    color: #fff;
+    font-weight: 500;
+}
+
+.form-group input,
+.form-group select {
+    padding: 0.75rem;
+    border: 2px solid #555;
+    border-radius: 6px;
+    background: #1a1a1a;
+    color: #fff;
+    font-size: 1rem;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #646cff;
+}
+
+.submit-btn {
+    background: #10b981;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s;
+}
+
+.submit-btn:hover {
+    background: #059669;
+}
+
+.codes-table {
+    border: 1px solid #444;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.table-header,
+.table-row {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr 1fr 2fr 1fr 1fr;
+    gap: 1rem;
+    padding: 1rem;
+    align-items: center;
+}
+
+.table-header {
+    background: #374151;
+    font-weight: 600;
+    color: #ccc;
+}
+
+.table-row {
+    border-bottom: 1px solid #444;
+}
+
+.table-row:last-child {
+    border-bottom: none;
+}
+
+.code {
+    font-family: monospace;
+    font-weight: 600;
+    color: #646cff;
+}
+
+.role {
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.role-admin {
+    background: #dc2626;
+    color: white;
+}
+
+.role-trainer {
+    background: #f59e0b;
+    color: white;
+}
+
+.role-trainee {
+    background: #10b981;
+    color: white;
+}
+
+.status {
+    font-size: 0.9rem;
+}
+
+.status.used {
+    color: #6b7280;
+}
+
+.status.available {
+    color: #10b981;
+    font-weight: 600;
+}
+
+.delete-btn {
+    background: #dc2626;
+    color: white;
+    border: none;
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: background-color 0.3s;
+}
+
+.delete-btn:hover {
+    background: #b91c1c;
+}
+
+.loading {
+    text-align: center;
+    padding: 3rem;
+    color: #ccc;
+}
+
+@media (max-width: 768px) {
+    .table-header,
+    .table-row {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+
+    .table-header {
+        display: none;
+    }
+
+    .table-row {
+        border: 1px solid #444;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+        padding: 1rem;
+    }
+
+    .form-row {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+}
