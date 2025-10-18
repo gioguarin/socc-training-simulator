@@ -59,6 +59,11 @@ const UserDashboard: React.FC = () => {
                         <Link to="/lobby" className="action-btn primary">
                             Join Training Lobby
                         </Link>
+                        {(user?.role === 'trainer' || user?.role === 'admin') && (
+                            <Link to="/offline" className="action-btn secondary">
+                                Offline Training Mode
+                            </Link>
+                        )}
                         {user?.role === 'admin' && (
                             <Link to="/admin" className="action-btn secondary">
                                 Admin Dashboard

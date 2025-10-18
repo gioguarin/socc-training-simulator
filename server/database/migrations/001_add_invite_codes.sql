@@ -26,6 +26,5 @@ CREATE INDEX IF NOT EXISTS idx_invite_codes_code ON invite_codes(code);
 CREATE INDEX IF NOT EXISTS idx_invite_codes_used ON invite_codes(is_used);
 CREATE INDEX IF NOT EXISTS idx_invite_codes_expires ON invite_codes(expires_at);
 
--- Seed initial admin invite code
-INSERT OR IGNORE INTO invite_codes (code, email, role, department, expires_at)
-VALUES ('ADMIN2024', 'admin@socc-training.com', 'admin', 'IT Security', datetime('now', '+365 days'));
+-- Note: Admin invite code is generated at runtime on first startup
+-- See server/index.js generateInitialAdminCode() function

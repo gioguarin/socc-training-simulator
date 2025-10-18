@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(if [ -f .env ])",
+      "Bash(then echo \"✓ .env file exists\")",
+      "Bash(else echo \"✗ .env file not found - creating from .env.example\")",
+      "Bash(fi)",
+      "Bash(sqlite3:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

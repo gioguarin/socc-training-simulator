@@ -1,14 +1,20 @@
 const { getDatabase } = require('../database/init');
 const User = require('./User');
+const crypto = require('crypto');
 
 class InviteCode {
     static generate() {
-        // Generate secure random code (10 characters, alphanumeric)
+        // Generate cryptographically secure random code (10 characters, alphanumeric)
         const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
         let code = '';
+
+        // Use cryptographically secure random bytes instead of Math.random()
+        const randomBytes = crypto.randomBytes(10);
+
         for (let i = 0; i < 10; i++) {
-            code += chars.charAt(Math.floor(Math.random() * chars.length));
+            code += chars.charAt(randomBytes[i] % chars.length);
         }
+
         return code;
     }
 
@@ -97,6 +103,21 @@ class InviteCode {
                         else resolve({ changes: this.changes });
                     });
                 }
+            });
+        });
+    }
+
+    static async hasUnusedAdminCode() {
+        return new Promise((resolve, reject) => {
+            const db = getDatabase();
+            const sql = `
+                SELECT COUNT(*) as count FROM invite_codes
+                WHERE role = 'admin' AND is_used = 0 AND expires_at > datetime('now')
+            `;
+
+            db.get(sql, [], (err, row) => {
+                if (err) reject(err);
+                else resolve(row.count > 0);
             });
         });
     }

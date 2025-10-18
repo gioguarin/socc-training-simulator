@@ -8,6 +8,8 @@ import Lobby from './components/Lobby';
 import GameRoom from './components/GameRoom';
 import UserDashboard from './components/UserDashboard';
 import AdminDashboard from './components/admin/AdminDashboard';
+import OfflineMode from './components/offline/OfflineMode';
+import PlayerAssignment from './components/offline/PlayerAssignment';
 import './App.css';
 
 export interface Player {
@@ -46,6 +48,9 @@ const AppRoutes: React.FC = () => {
                 user ? <Navigate to="/dashboard" replace /> : <Register />
             } />
 
+            {/* Public offline assignment route - no auth required */}
+            <Route path="/offline/assignment" element={<PlayerAssignment />} />
+
             {/* Protected routes */}
             <Route path="/dashboard" element={
                 <ProtectedRoute>
@@ -62,6 +67,13 @@ const AppRoutes: React.FC = () => {
             <Route path="/game/:gameId" element={
                 <ProtectedRoute>
                     <GameRoom />
+                </ProtectedRoute>
+            } />
+
+            {/* Offline mode - requires trainer or admin */}
+            <Route path="/offline" element={
+                <ProtectedRoute requiredRole="trainer">
+                    <OfflineMode />
                 </ProtectedRoute>
             } />
 

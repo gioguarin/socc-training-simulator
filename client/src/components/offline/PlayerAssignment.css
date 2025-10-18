@@ -1,0 +1,397 @@
+.assignment-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+    padding: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.assignment-container {
+    width: 100%;
+    max-width: 800px;
+}
+
+.assignment-card,
+.welcome-card,
+.error-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+}
+
+.assignment-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 2rem;
+    text-align: center;
+}
+
+.assignment-header h1 {
+    margin: 0 0 1rem 0;
+    font-size: 1.8rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+
+.access-code-display {
+    font-size: 1rem;
+    opacity: 0.95;
+}
+
+.access-code-display span {
+    font-family: 'Courier New', monospace;
+    font-weight: 700;
+    font-size: 1.3rem;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    display: inline-block;
+    margin-left: 0.5rem;
+}
+
+.session-info {
+    padding: 2rem;
+    background: #f7fafc;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+}
+
+.info-row .label {
+    color: #718096;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.info-row .value {
+    color: #2d3748;
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+.role-section {
+    padding: 2rem;
+    display: flex;
+    justify-content: center;
+}
+
+.role-badge-large {
+    padding: 2rem 3rem;
+    border-radius: 12px;
+    text-align: center;
+    min-width: 300px;
+}
+
+.role-badge-large.role-caller {
+    background: linear-gradient(135deg, #f6ad55 0%, #ed8936 100%);
+    color: #7c2d12;
+}
+
+.role-badge-large.role-responder {
+    background: linear-gradient(135deg, #68d391 0%, #48bb78 100%);
+    color: #22543d;
+}
+
+.role-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    opacity: 0.8;
+    margin-bottom: 0.5rem;
+}
+
+.role-name {
+    font-size: 1.8rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.pairing-section {
+    padding: 2rem;
+    background: white;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.pairing-info {
+    text-align: center;
+}
+
+.pairing-info .label {
+    color: #718096;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.paired-name {
+    color: #2d3748;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0.5rem 0;
+}
+
+.paired-role {
+    color: #718096;
+    font-size: 1rem;
+}
+
+.scenario-section {
+    padding: 2rem;
+    background: #f7fafc;
+}
+
+.scenario-section h2 {
+    margin: 0 0 1rem 0;
+    color: #2d3748;
+    font-size: 1.5rem;
+    text-align: center;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.scenario-description {
+    text-align: center;
+    color: #718096;
+    margin-bottom: 2rem;
+}
+
+.caller-info,
+.responder-info {
+    margin-top: 1.5rem;
+}
+
+.info-box {
+    background: white;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.info-box.warning {
+    background: #fffaf0;
+    border-color: #f6ad55;
+}
+
+.info-box h3 {
+    margin: 0 0 1rem 0;
+    color: #2d3748;
+    font-size: 1.1rem;
+}
+
+.script-text {
+    color: #4a5568;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    font-size: 0.95rem;
+}
+
+.responder-info h3 {
+    color: #2d3748;
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+}
+
+.goals-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.goals-list li {
+    background: white;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 1rem 1.5rem;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    color: #2d3748;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.goal-icon {
+    color: #48bb78;
+    font-weight: 700;
+    margin-right: 1rem;
+    font-size: 1.2rem;
+}
+
+.actions {
+    padding: 2rem;
+    background: white;
+    text-align: center;
+}
+
+.copy-button {
+    padding: 1rem 3rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 1rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.copy-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+}
+
+.copy-button:active {
+    transform: translateY(0);
+}
+
+/* Welcome Card */
+.welcome-card {
+    padding: 4rem 3rem;
+    text-align: center;
+}
+
+.welcome-card h1 {
+    margin: 0 0 1rem 0;
+    color: #2d3748;
+    font-size: 2rem;
+}
+
+.welcome-card p {
+    color: #718096;
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+}
+
+.code-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.code-form input {
+    padding: 1rem 1.5rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1.2rem;
+    text-align: center;
+    font-family: 'Courier New', monospace;
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+
+.code-form input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.code-form button {
+    padding: 1rem 2rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 1rem;
+    transition: transform 0.2s;
+}
+
+.code-form button:hover {
+    transform: translateY(-2px);
+}
+
+/* Error Card */
+.error-card {
+    padding: 4rem 3rem;
+    text-align: center;
+}
+
+.error-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.error-card h2 {
+    margin: 0 0 1rem 0;
+    color: #e53e3e;
+    font-size: 1.8rem;
+}
+
+.error-card p {
+    color: #718096;
+    margin-bottom: 2rem;
+}
+
+/* Loading */
+.loading-spinner {
+    padding: 5rem 3rem;
+    text-align: center;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid rgba(102, 126, 234, 0.2);
+    border-top-color: #667eea;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.loading-spinner p {
+    color: #718096;
+    font-size: 1.1rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .assignment-page {
+        padding: 1rem;
+    }
+
+    .assignment-header h1 {
+        font-size: 1.4rem;
+    }
+
+    .role-badge-large {
+        min-width: auto;
+        padding: 1.5rem 2rem;
+    }
+
+    .role-name {
+        font-size: 1.4rem;
+    }
+
+    .info-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+    }
+
+    .welcome-card,
+    .error-card {
+        padding: 2rem 1.5rem;
+    }
+
+    .code-form {
+        max-width: 100%;
+    }
+}

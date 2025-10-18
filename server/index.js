@@ -15,11 +15,16 @@ const { v4: uuidv4 } = require("uuid");
 const authRoutes = require("./routes/auth");
 const scenarioRoutes = require("./routes/scenarios");
 const adminRoutes = require("./routes/admin");
+const offlineRoutes = require("./routes/offline");
 const User = require("./models/User");
 const Scenario = require("./models/Scenario");
 const GameSession = require("./models/GameSession");
+const InviteCode = require("./models/InviteCode");
 const { authenticateToken } = require("./middleware/auth");
+const { errorHandler } = require("./middleware/errorHandler");
 const { initializeDatabase } = require("./database/init");
+const { processMessage } = require("./utils/chatValidation");
+const { csrfTokenGenerator, getCsrfToken } = require("./middleware/csrf");
 
 const app = express();
 const server = http.createServer(app);
@@ -53,10 +58,56 @@ app.use(
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        styleSrc: ["'self'", "'unsafe-inline'"],
+        // Scripts: Only from same origin (no inline scripts except nonces)
         scriptSrc: ["'self'"],
+        // Styles: Allow inline styles for React/CSS-in-JS compatibility
+        // TODO: Replace 'unsafe-inline' with nonces in production for better security
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        // Images: Allow from same origin, data URIs, and HTTPS sources
         imgSrc: ["'self'", "data:", "https:"],
+        // Fonts: Allow from same origin and data URIs
+        fontSrc: ["'self'", "data:"],
+        // Connections: Allow WebSocket for Socket.io and API calls
+        connectSrc: [
+          "'self'",
+          process.env.FRONTEND_URL || "http://localhost:3000",
+          "ws://localhost:3001",
+          "wss://localhost:3001"
+        ],
+        // Media: Restrict to same origin only
+        mediaSrc: ["'self'"],
+        // Objects: No plugin content allowed
+        objectSrc: ["'none'"],
+        // Frames: Prevent embedding except from same origin
+        frameSrc: ["'self'"],
+        // Frame ancestors: Prevent clickjacking
+        frameAncestors: ["'self'"],
+        // Base URI: Restrict to same origin
+        baseUri: ["'self'"],
+        // Form actions: Only allow forms to submit to same origin
+        formAction: ["'self'"],
+        // Upgrade insecure requests in production
+        ...(process.env.NODE_ENV === "production" && {
+          upgradeInsecureRequests: [],
+        }),
       },
+    },
+    // Additional Helmet security headers
+    hsts: {
+      maxAge: 31536000, // 1 year
+      includeSubDomains: true,
+      preload: true,
+    },
+    frameguard: {
+      action: "deny", // Prevent clickjacking
+    },
+    noSniff: true, // Prevent MIME type sniffing
+    xssFilter: true, // Enable XSS filter
+    referrerPolicy: {
+      policy: "strict-origin-when-cross-origin",
+    },
+    permittedCrossDomainPolicies: {
+      permittedPolicies: "none",
     },
   }),
 );
@@ -81,17 +132,53 @@ app.use(
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 
+// Validate SESSION_SECRET is properly configured
+const SESSION_SECRET = process.env.SESSION_SECRET;
+
+if (!SESSION_SECRET) {
+  console.error('\n' + '='.repeat(70));
+  console.error('SECURITY ERROR: SESSION_SECRET environment variable is required.');
+  console.error('Set a strong secret (min 32 characters) in your .env file.');
+  console.error('Generate one using:');
+  console.error('  node -e "console.log(require(\'crypto\').randomBytes(32).toString(\'hex\'))"');
+  console.error('='.repeat(70) + '\n');
+  throw new Error('SESSION_SECRET is required');
+}
+
+if (SESSION_SECRET.length < 32) {
+  console.error('\n' + '='.repeat(70));
+  console.error('SECURITY ERROR: SESSION_SECRET must be at least 32 characters long.');
+  console.error(`Current length: ${SESSION_SECRET.length}`);
+  console.error('Generate a strong secret using:');
+  console.error('  node -e "console.log(require(\'crypto\').randomBytes(32).toString(\'hex\'))"');
+  console.error('='.repeat(70) + '\n');
+  throw new Error('SESSION_SECRET too short');
+}
+
+// Check if using placeholder values
+const weakSessionSecrets = ['your-session-secret', 'change-in-production', 'secret', 'password', 'test'];
+if (weakSessionSecrets.some(weak => SESSION_SECRET.toLowerCase().includes(weak))) {
+  console.error('\n' + '='.repeat(70));
+  console.error('SECURITY ERROR: SESSION_SECRET appears to be a placeholder value.');
+  console.error('Generate a strong random secret using:');
+  console.error('  node -e "console.log(require(\'crypto\').randomBytes(32).toString(\'hex\'))"');
+  console.error('='.repeat(70) + '\n');
+  throw new Error('SESSION_SECRET is a placeholder value');
+}
+
+console.log('✓ SESSION_SECRET validated successfully');
+
 // Session configuration
 app.use(
   session({
     store: new SQLiteStore({ db: "sessions.db", dir: "./data" }),
-    secret:
-      process.env.SESSION_SECRET || "your-session-secret-change-in-production",
+    secret: SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     cookie: {
       secure: process.env.NODE_ENV === "production",
       httpOnly: true,
+      sameSite: 'strict',
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
     },
   }),
@@ -100,6 +187,9 @@ app.use(
 // Passport initialization
 app.use(passport.initialize());
 app.use(passport.session());
+
+// CSRF token generation (must be after session middleware)
+app.use(csrfTokenGenerator);
 
 // Socket.io configuration with authentication
 const io = socketIo(server, {
@@ -200,25 +290,53 @@ async function loadScenarios() {
 }
 
 // Socket authentication middleware
+const jwt = require('jsonwebtoken');
+
 io.use(async (socket, next) => {
   try {
     const token = socket.handshake.auth.token;
+
     if (!token) {
       return next(new Error("Authentication token required"));
     }
 
-    // Verify JWT token (simplified - in production use proper JWT verification)
-    // For now, accept any token and create a mock user
-    const mockUser = {
-      id: 1,
-      email: "user@company.com",
-      name: "Authenticated User",
-      role: "trainee",
-    };
+    // Verify JWT token properly
+    const JWT_SECRET = process.env.JWT_SECRET;
+    if (!JWT_SECRET) {
+      console.error('CRITICAL: JWT_SECRET not configured for Socket.io authentication');
+      return next(new Error("Server configuration error"));
+    }
 
-    socket.user = mockUser;
+    let decoded;
+    try {
+      decoded = jwt.verify(token, JWT_SECRET);
+    } catch (jwtError) {
+      if (jwtError.name === 'JsonWebTokenError') {
+        return next(new Error("Invalid token"));
+      }
+      if (jwtError.name === 'TokenExpiredError') {
+        return next(new Error("Token expired"));
+      }
+      throw jwtError;
+    }
+
+    // Fetch actual user from database
+    const user = await User.findById(decoded.userId);
+    if (!user) {
+      return next(new Error("User not found"));
+    }
+
+    // Check if user is active
+    if (!user.is_active) {
+      return next(new Error("User account is inactive"));
+    }
+
+    socket.user = user;
+    // Avoid logging PII (email) - use user ID only
+    console.log(`Socket.io: User ${user.id} (${user.name}) authenticated successfully`);
     next();
   } catch (error) {
+    console.error('Socket authentication error:', error.message);
     next(new Error("Authentication failed"));
   }
 });
@@ -316,24 +434,54 @@ io.on("connection", (socket) => {
     const { gameId, message, timestamp } = data;
     const game = activeGames.get(gameId);
 
-    if (game) {
-      try {
-        // Save message to database
-        await GameSession.saveChatMessage(game.id, socket.user.id, message);
+    if (!game) {
+      return socket.emit("error", { message: "Game not found" });
+    }
 
-        // Broadcast message to both players in the game
-        game.players.forEach((player) => {
-          io.to(player.id).emit("message-received", {
-            from: socket.id,
-            message,
-            timestamp,
-            role: game.players.find((p) => p.id === socket.id)?.role,
-          });
+    try {
+      // Validate and sanitize the message
+      const result = processMessage(message, socket.user.id);
+
+      if (!result.valid) {
+        logger.warn("Invalid chat message", {
+          userId: socket.user.id,
+          gameId,
+          errors: result.errors,
+          rateLimitExceeded: result.rateLimitExceeded || false
         });
-      } catch (error) {
-        console.error("Save message error:", error);
-        socket.emit("error", { message: "Failed to send message" });
+
+        return socket.emit("message-error", {
+          error: result.errors[0],
+          rateLimitExceeded: result.rateLimitExceeded || false
+        });
       }
+
+      const sanitizedMessage = result.message;
+
+      // Save sanitized message to database
+      await GameSession.saveChatMessage(game.id, socket.user.id, sanitizedMessage);
+
+      // Broadcast sanitized message to both players in the game
+      game.players.forEach((player) => {
+        io.to(player.id).emit("message-received", {
+          from: socket.id,
+          message: sanitizedMessage,
+          timestamp,
+          role: game.players.find((p) => p.id === socket.id)?.role,
+        });
+      });
+
+      // Log message metadata
+      logger.debug("Chat message sent", {
+        userId: socket.user.id,
+        gameId,
+        messageLength: result.metadata.sanitizedLength,
+        remainingMessages: result.metadata.remaining
+      });
+
+    } catch (error) {
+      console.error("Save message error:", error);
+      socket.emit("error", { message: "Failed to send message" });
     }
   });
 
@@ -422,6 +570,7 @@ io.on("connection", (socket) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/scenarios", scenarioRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/offline", offlineRoutes);
 
 // Health check endpoint
 app.get("/api/health", (req, res) => {
@@ -432,24 +581,11 @@ app.get("/api/health", (req, res) => {
   });
 });
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-  logger.error("Unhandled error", {
-    error: err.message,
-    stack: err.stack,
-    url: req.url,
-    method: req.method,
-    ip: req.ip,
-  });
+// CSRF token endpoint
+app.get("/api/csrf-token", getCsrfToken);
 
-  res.status(500).json({
-    error: "Internal server error",
-    message:
-      process.env.NODE_ENV === "development"
-        ? err.message
-        : "Something went wrong",
-  });
-});
+// Error handling middleware (must be after all routes)
+app.use(errorHandler);
 
 // 404 handler
 app.use((req, res) => {
@@ -462,6 +598,71 @@ function getRandomScenario() {
   return scenarioList[Math.floor(Math.random() * scenarioList.length)];
 }
 
+// Generate initial admin invite code if none exists
+async function generateInitialAdminCode() {
+  try {
+    const hasAdminCode = await InviteCode.hasUnusedAdminCode();
+
+    if (!hasAdminCode) {
+      // No unused admin code exists, generate one
+      const fs = require('fs');
+      const path = require('path');
+
+      const adminCode = await InviteCode.create(
+        null, // No specific email
+        'admin',
+        'IT Security',
+        null, // No creator (system generated)
+        365 // Expires in 1 year
+      );
+
+      const logMessage = `
+${'='.repeat(70)}
+ADMIN INVITE CODE GENERATED
+${'='.repeat(70)}
+
+A new admin invite code has been created for first-time setup:
+
+  CODE: ${adminCode.code}
+  ROLE: admin
+  EXPIRES: ${new Date(adminCode.expires_at).toLocaleDateString()}
+
+IMPORTANT:
+- Save this code in a secure location
+- This code can be used to create the first admin account
+- After use, generate new codes through the admin panel
+- This message is logged in logs/admin-codes.log
+
+${'='.repeat(70)}
+`;
+
+      console.log(logMessage);
+
+      // Log to file for reference
+      const logDir = path.join(__dirname, '../logs');
+      if (!fs.existsSync(logDir)) {
+        fs.mkdirSync(logDir, { recursive: true });
+      }
+
+      const logFile = path.join(logDir, 'admin-codes.log');
+      const timestamp = new Date().toISOString();
+      fs.appendFileSync(logFile, `\n${timestamp}\n${logMessage}\n`);
+
+      // DO NOT log the actual code to general logs for security
+      logger.info('Initial admin invite code generated', {
+        codeId: adminCode.id,
+        expires_at: adminCode.expires_at,
+        // code omitted for security - see logs/admin-codes.log
+      });
+    } else {
+      console.log('✓ Admin invite code already exists');
+    }
+  } catch (error) {
+    console.error('Failed to generate admin invite code:', error);
+    // Don't fail server startup if admin code generation fails
+  }
+}
+
 // Initialize database and start server
 async function startServer() {
   try {
@@ -470,6 +671,9 @@ async function startServer() {
 
     // Load scenarios
     await loadScenarios();
+
+    // Generate initial admin code if needed
+    await generateInitialAdminCode();
 
     const PORT = process.env.PORT || 3001;
     server.listen(PORT, () => {

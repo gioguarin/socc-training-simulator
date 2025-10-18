@@ -1,17 +1,20 @@
 -- SOCC Training Simulator Database Schema
 
--- Users table (populated from OAuth)
+-- Users table (populated from OAuth or invite-based registration)
 CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     oauth_id TEXT UNIQUE NOT NULL,
     email TEXT UNIQUE NOT NULL,
     name TEXT NOT NULL,
     department TEXT,
+    password_hash TEXT,
+    invite_code_id INTEGER,
     role TEXT DEFAULT 'trainee' CHECK (role IN ('admin', 'trainer', 'trainee')),
     is_active BOOLEAN DEFAULT 1,
     last_login DATETIME,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (invite_code_id) REFERENCES invite_codes(id)
 );
 
 -- Custom scenarios submitted by users
